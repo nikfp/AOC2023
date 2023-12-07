@@ -1,7 +1,7 @@
 test_file =
   File.read!("./test.txt")
 
-prod_file = 
+prod_file =
   File.read!("./prod.txt")
 
 defmodule AOC do
@@ -44,7 +44,8 @@ defmodule AOC do
       {x + 1, y},
       {x - 1, y + 1},
       {x, y + 1},
-      {x + 1, y + 1}
+      {x + 1, y + 1},
+      {x, y}
     ]
     |> Enum.filter(fn {x, _} ->
       case x do
@@ -61,6 +62,8 @@ defmodule AOC do
   end
 
   def find_all_surrounding({a, b}, size) do
+    # {start, _} = a
+    # {last, _} = b
     (find_surrounding(a, size) ++ find_surrounding(b, size))
     |> Enum.uniq()
   end
@@ -103,6 +106,7 @@ defmodule NumFinder do
             acc
 
           # if acc is tracking and input is not a number, finish and
+          # push to end of list
           true ->
             {nil, list ++ [{tracking, {prev_x, y}}]}
         end
@@ -110,20 +114,12 @@ defmodule NumFinder do
   end
 end
 
-# or if end of line is reached
-# push to list of tracked locations
 
 solver_1 = fn x ->
   lines =
     String.split(x)
     |> Enum.map(fn line ->
-      String.split(line, "")
-      |> Enum.filter(fn x ->
-        case x do
-          "" -> false
-          _ -> true
-        end
-      end)
+      String.split(line, "", trim: true)
     end)
     |> Enum.with_index()
     |> Enum.map(fn {line, y} ->
@@ -154,6 +150,7 @@ solver_1 = fn x ->
   |> Enum.filter(fn {a, b} ->
     AOC.find_all_surrounding({a, b}, puzzle_size)
     |> Enum.any?(fn x -> AOC.is_symbol?(x, lines) end)
+
     # |> IO.inspect()
   end)
   |> Enum.map(fn x -> AOC.extract_number(x, lines) end)
@@ -162,6 +159,3 @@ end
 
 test_file |> solver_1.() |> IO.inspect()
 prod_file |> solver_1.() |> IO.inspect()
-
-
-
