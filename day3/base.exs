@@ -62,9 +62,11 @@ defmodule AOC do
   end
 
   def find_all_surrounding({a, b}, size) do
-    # {start, _} = a
-    # {last, _} = b
-    (find_surrounding(a, size) ++ find_surrounding(b, size))
+    {start, y} = a
+    {last, _} = b
+   start..last |> Enum.map(fn x -> {x, y} end)
+    |> Enum.map(fn x -> find_surrounding(x, size) end)
+    |> List.flatten()
     |> Enum.uniq()
   end
 
@@ -146,6 +148,8 @@ solver_1 = fn x ->
     |> Enum.map(&elem(&1, 1))
     |> Enum.concat()
 
+  locations |> Enum.count() |> IO.inspect()
+
   locations
   |> Enum.filter(fn {a, b} ->
     AOC.find_all_surrounding({a, b}, puzzle_size)
@@ -159,3 +163,4 @@ end
 
 test_file |> solver_1.() |> IO.inspect()
 prod_file |> solver_1.() |> IO.inspect()
+1..3 |> Enum.map(fn x -> x end) |> IO.inspect()
