@@ -1,7 +1,7 @@
 test_file =
   File.read!("./test.txt")
 
-_prod_file =
+prod_file =
   File.read!("./prod.txt")
 
 defmodule AOC do
@@ -32,11 +32,29 @@ defmodule AOC do
   end
 end
 
+defmodule Part1_score do
+  def score_card([_head | tail]) do
+    tail_length = length(tail)
+
+    case tail_length do
+      0 -> 1
+      _ -> 1 * 2 ** tail_length
+    end
+  end
+
+  def score_card([]) do
+    0
+  end
+end
+
 solver_1 = fn x ->
   AOC.parse_input(x)
-  |> Enum.map(fn {_, left, right} -> 
+  |> Enum.map(fn {_, left, right} ->
     AOC.compare_winning(left, right)
   end)
+  |> Enum.map(&Part1_score.score_card/1)
+  |> Enum.sum()
 end
 
 test_file |> solver_1.() |> IO.inspect()
+prod_file |> solver_1.() |> IO.inspect()
