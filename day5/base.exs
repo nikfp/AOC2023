@@ -4,7 +4,6 @@ test_file =
 defmodule AOC do
   def parse_input(input) do
     [seeds | maps] = String.split(input, "\n\n")
-    maps
   end
 end
 
