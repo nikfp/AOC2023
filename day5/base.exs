@@ -136,13 +136,6 @@ defmodule InputSplitter do
   end
 end
 
-{{48, 101}, [{50, 94}, {98, 99}]}
-|> IO.inspect(label: "base")
-|> (fn {input, tester_list} ->
-      InputSplitter.process(input, tester_list, [])
-    end).()
-|> IO.inspect()
-
 # solver_1 = fn x ->
 #   {inputs, mapper_settings} =
 #     x
@@ -161,24 +154,42 @@ solver_2 = fn x ->
     x
     |> AOC.parse_input()
 
-  compare_lists =
-    mapper_settings
-    |> Enum.map(&AOC.build_comparison_list/1)
-
-  first_set =
+  
+  #
+  ranges =
     inputs
     |> Enum.chunk_every(2)
     |> Enum.map(fn [a, b] -> {a, a + b - 1} end)
-    |> hd()
 
-  first_compare = hd(compare_lists)
-  {first_set, first_compare}
+  mapper_settings
+  |> Enum.reduce(ranges, fn mapper, acc ->
+    transformer = AOC.build_transformer(mapper)
+    comp_list = AOC.build_comparison_list(mapper)
+
+    # IO.puts(" ")
+    # IO.inspect(acc, label: "range input")
+    # IO.inspect(comp_list, label: "compare list")
+    
+    acc
+    |> Enum.map(fn x ->
+      InputSplitter.process(x, comp_list, [])
+    end)
+    |> List.flatten()
+    |> Enum.map(fn {low, high} -> 
+    {transformer.(low), transformer.(high)}
+    end)
+  end)
+  |> Enum.map(fn {x, _} -> x end)
+  |> Enum.min()
 end
 
-# test_file
-# |> solver_2.()
-# |> IO.inspect()
+test_file
+|> solver_2.()
+|> IO.inspect(label: "Test Case")
 
+prod_file
+|> solver_2.()
+|> IO.inspect(label: "Prod Case")
 # {{50, 98}, {50, 97}}
 # |> InputSplitter.evaluate()
 # |> IO.inspect()
@@ -189,4 +200,11 @@ end
 
 # prod_file
 # |> solver_1.()
+# |> IO.inspect()
+
+# {{48, 101}, [{50, 94}, {98, 99}]}
+# |> IO.inspect(label: "base")
+# |> (fn {input, tester_list} ->
+#       InputSplitter.process(input, tester_list, [])
+#     end).()
 # |> IO.inspect()
